@@ -41,13 +41,13 @@ public class Passenger extends Agent {
 				description.addServices(serviceDescription);
 				try {
 					DFAgentDescription[] x = DFService.search(myAgent, description);
-					System.out.println(x.length);
+					
+					System.out.println("Passager censé envoyer message aux voitures");
 					System.out.println(x[0].getName());
 				} catch (FIPAException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			    System.out.println("Bonjour tout le monde je suis l'agent "+getLocalName());
 		  }
 	  });
 	}
