@@ -24,9 +24,7 @@ public class Main {
 		rt.setCloseVM(true);
 		Profile pMain = new ProfileImpl("localhost", 8888, null);
 		AgentContainer mc = rt.createMainContainer(pMain);
-		
-		House.setAgentController(mc);
-		
+				
 		// DEFINE HOUSE AGENTS
 		String houseId0 = "h-0";
 		String houseId1 = "h-1";
