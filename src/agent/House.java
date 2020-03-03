@@ -5,15 +5,13 @@ import java.util.UUID;
 import behavior.GeneratePerson;
 import dataStructure.HouseData;
 import jade.core.Agent;
-import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
 public class House extends Agent {
 	
 	final int GENERATION_TICK = 1000;
-	
-	
+		
 	public String id;
 	
 	protected void setup(){ 

@@ -2,11 +2,14 @@ package agent;
 
 import behavior.SendPassengerData;
 import dataStructure.PassengerData;
+import dataStructure.Performatifs;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import smaUtils.SmaUtils;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 
@@ -40,12 +43,17 @@ public class Passenger extends Agent {
 				DFAgentDescription description = new DFAgentDescription();
 				description.addServices(serviceDescription);
 				try {
-					DFAgentDescription[] x = DFService.search(myAgent, description);
-					
-					System.out.println("Passager censé envoyer message aux voitures");
-					System.out.println(x[0].getName());
+					DFAgentDescription[] descriptionList = DFService.search(myAgent, description);
+					System.out.println("Passager envoit message à tt les voitures");
+					for (int i = 0; i < descriptionList.length; i++) {
+						AID carAID = descriptionList[0].getName();
+						ACLMessage request = new ACLMessage(Performatifs.PASSENGER_REQUEST);
+						request.addReceiver(carAID);
+						request.setContent("SALUT, je veux une course !");
+						System.out.println("envoit à voiture " + carAID.toString());
+						this.myAgent.send(request);
+					}
 				} catch (FIPAException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		  }

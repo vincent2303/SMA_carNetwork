@@ -3,6 +3,7 @@ package agent;
 import java.util.ArrayList;
 
 import behavior.Drive;
+import behavior.ReadRequest;
 import behavior.SendCarData;
 import dataStructure.CarData;
 import dataStructure.HouseData;
@@ -32,6 +33,7 @@ public class Car extends Agent {
 		// behaviors
 		this.addBehaviour(new SendCarData(this, SEND_DATA_TICK));
 		this.addBehaviour(new Drive(this, CAR_DRIVING_TICK));
+		this.addBehaviour(new ReadRequest());
 	}
 	
 	private void register() {
