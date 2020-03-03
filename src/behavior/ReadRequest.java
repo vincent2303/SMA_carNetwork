@@ -1,5 +1,6 @@
 package behavior;
 
+import agent.Car;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -14,7 +15,7 @@ public class ReadRequest extends CyclicBehaviour {
 		if (m==null) {
 			block();
 		} else {
-			System.out.println("Une voiture " + myAgent.getAID() + " a recus request");
+			System.out.println("Une voiture " + ((Car) myAgent).carData.id + " a recus message" );
 		}
 	}
 }
