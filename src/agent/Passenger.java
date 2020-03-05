@@ -1,6 +1,9 @@
 package agent;
 
+import java.io.IOException;
+
 import behavior.SendPassengerData;
+import behavior.Request;
 import dataStructure.PassengerData;
 import dataStructure.Performatifs;
 import jade.core.AID;
@@ -16,6 +19,7 @@ import jade.domain.FIPAException;
 public class Passenger extends Agent {
 	
 	final int SEND_DATA_TICK = 100;
+	final int SEND_REQUEST_TICK = 1000;
 	
 	static String[] houseIds;
 	
@@ -36,28 +40,9 @@ public class Passenger extends Agent {
 		// behaviors
 		System.out.println("Passenger created From " + this.fromId + " TO:" + this.toId);
 		this.addBehaviour(new SendPassengerData(this, SEND_DATA_TICK));
-		this.addBehaviour(new OneShotBehaviour(this){
-			public void action(){
-				ServiceDescription serviceDescription = new ServiceDescription();
-			    serviceDescription.setType("car");
-				DFAgentDescription description = new DFAgentDescription();
-				description.addServices(serviceDescription);
-				try {
-					DFAgentDescription[] descriptionList = DFService.search(myAgent, description);
-					System.out.println("Passager envoit message à tt les voitures");
-					for (int i = 0; i < descriptionList.length; i++) {
-						AID carAID = descriptionList[0].getName();
-						ACLMessage request = new ACLMessage(Performatifs.PASSENGER_REQUEST);
-						request.addReceiver(carAID);
-						request.setContent("SALUT, je veux une course !");
-						System.out.println("envoit à voiture " + carAID.toString());
-						this.myAgent.send(request);
-					}
-				} catch (FIPAException e) {
-					e.printStackTrace();
-				}
-		  }
-	  });
+		
+		this.addBehaviour(new Request());
+		
 	}
 	
 	private void setRandomTo() {

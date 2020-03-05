@@ -11,10 +11,12 @@ import java.util.Map.Entry;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import behavior.FindNearestCar;
 import behavior.ReadCarData;
 import behavior.ReadPassengerData;
 import dataStructure.CarData;
 import dataStructure.HouseData;
+import dataStructure.HousePath;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -75,6 +77,112 @@ public class Map extends Agent {
 			e.printStackTrace();
 		}
 	}
+	
+	// -------------------------------- PATH FINDING ---------------------------------------------------------	
+	
+	private int distanceConnectedHouses(String id0, String id1) {
+		int[] p0 = housesMap.get(id0).position;
+		int[] p1 = housesMap.get(id1).position;
+		double d = SmaUtils.computeDistance(p0, p1);
+		return (int) d;
+	}
+	
+	public int computeDistanceFromDrivingPath(ArrayList<HouseData> drivingPath){
+		int distance = 0;
+		for(int i=1; i<drivingPath.size(); i++) {
+			distance += distanceConnectedHouses(drivingPath.get(i-1).id, drivingPath.get(i).id);
+		}
+		return  distance;
+	}
+	
+	public ArrayList<HouseData> findPath(String fromId, String toId){
+		
+		HashMap<String, HousePath> visitedHouses = new HashMap<String, HousePath>();  // key: houseID, value: { distance, parentId, house }
+		visitedHouses.put(fromId, new HousePath( fromId, null, 0 ));
+		
+		ArrayList<HousePath> housesToVisit = new ArrayList<HousePath>();
+		
+		for(int i=0; i<housesMap.get(fromId).neighboors.size(); i++) {
+			String neighboorId = housesMap.get(fromId).neighboors.get(i);
+			housesToVisit.add(new HousePath(neighboorId, fromId, 0));
+		}
+		
+		while(housesToVisit.size() != 0) {
+			HousePath visitingHouse = housesToVisit.remove(housesToVisit.size()-1);
+			int distance = visitedHouses.get(visitingHouse.parentId).distance + distanceConnectedHouses(visitingHouse.parentId, visitingHouse.houseId);
+			if(!visitedHouses.containsKey(visitingHouse.houseId)) {
+				visitedHouses.put(visitingHouse.houseId, new HousePath(visitingHouse.houseId, visitingHouse.parentId, distance));
+				ArrayList<String> neighboorIds = housesMap.get(visitingHouse.houseId).neighboors;
+				for(int i =0; i<neighboorIds.size(); i++) {
+					housesToVisit.add(new HousePath( neighboorIds.get(i), visitingHouse.houseId, 0 ));
+				}
+			} else if(distance<visitedHouses.get(visitingHouse.houseId).distance) {
+				visitedHouses.put(visitingHouse.houseId, new HousePath(visitingHouse.houseId, visitingHouse.parentId, distance));
+				ArrayList<String> neighboorIds = housesMap.get(visitingHouse.houseId).neighboors;
+				for(int i =0; i<neighboorIds.size(); i++) {
+					housesToVisit.add(new HousePath( neighboorIds.get(i), visitingHouse.houseId, 0 ));
+				}
+			}
+		}
+		
+		ArrayList<String> pathIds = new ArrayList<String>();
+		pathIds.add(toId);
+		
+		String currentId = toId;
+		while(!currentId.equals(fromId)) {
+			currentId = visitedHouses.get(currentId).parentId;
+			pathIds.add(currentId);
+		}
+		
+		ArrayList<String> reversedPathIds = new ArrayList<String>();
+		
+		for(int i= pathIds.size()-1; i>=0; i--) {
+			reversedPathIds.add(pathIds.get(i));
+		}
+		
+		ArrayList<HouseData> drivingPath = new ArrayList<HouseData>();
+		
+		for(int i=0; i<reversedPathIds.size(); i++) {
+			drivingPath.add(housesMap.get(reversedPathIds.get(i)));
+		}
+		
+		return drivingPath;
+	}
+	
+	
+	
+	/*
+	function findPath(from, to){
+	    // do dijsktra
+	    const visitedHouses = new Map([[ from.id, { distance: 0, parent: null, house: from } ]]) // key: houseID, value: { distance, parentId, house }
+	    const houseToVisit = from.neighboors.map( h=> ({ parent: from, house: h })) // list of { parentId, house }; initialized with the neighboors of from
+	    while(houseToVisit.length){
+	        const { parent, house } = houseToVisit.pop()
+	        const distance = visitedHouses.get(parent.id).distance + computeDistance(parent.position, house.position)
+	        if(!visitedHouses.has(house.id)){
+	            visitedHouses.set(house.id, { parent, house, distance })
+	            house.neighboors.forEach(h =>{ 
+	                houseToVisit.push({ parent: house, house: h })
+	            })
+	        } else if(distance<visitedHouses.get(house.id).distance){
+	            visitedHouses.set(house.id, { parent, house, distance })
+	            house.neighboors.forEach(h =>{ 
+	                houseToVisit.push({ parent: house, house: h })
+	            })
+	        }
+	    }
+	    // we go backward to get the final path
+	    let currentId = to.id
+	    const result = [currentId] // the final path (list of houses)
+	    while(currentId !== from.id){
+	        currentId = visitedHouses.get(currentId).parent.id
+	        result.push(currentId)
+	    }
+	    const x = result.pop() // we remove the from house (because we don't need it, we assign because we don't want to log)
+	    return result.map(id=>visitedHouses.get(id).house)
+	}
+	*/
+	
 		
 	// -------------------------------- SETUP ----------------------------------------------------------------
 	
@@ -93,6 +201,9 @@ public class Map extends Agent {
 		
 		this.addBehaviour(new ReadPassengerData());
 		this.addBehaviour(new ReadCarData());
+		this.addBehaviour(new FindNearestCar());
+		
+		this.findPath("h-0", "h-4");
 	}
 	
 	// ---------------------------- DRAWING SYSTEM --------------------------------------------------------

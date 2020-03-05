@@ -6,20 +6,11 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import messageFilter.PassengerInfo;
+import smaUtils.SmaUtils;
 import jade.lang.acl.ACLMessage;
 
 
 public class ReadPassengerData extends CyclicBehaviour {
-	
-	private PassengerData getPassengerData(ACLMessage m) {
-		try {
-			PassengerData passengerData = (PassengerData) m.getContentObject();
-			return passengerData;
-		} catch (UnreadableException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 	
 	@Override
 	public void action() {
@@ -29,7 +20,7 @@ public class ReadPassengerData extends CyclicBehaviour {
 			block();
 		}
 		else {
-			PassengerData passengerData = getPassengerData(m);
+			PassengerData passengerData = SmaUtils.getPassengerDataFromMessage(m);
 			Map map = (Map) myAgent;
 			String passengerState = passengerData.passengerState;
 			if(passengerState.equals(PassengerData.WAITING)) { // if waiting, the passenger is in the house

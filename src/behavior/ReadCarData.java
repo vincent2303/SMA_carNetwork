@@ -5,20 +5,10 @@ import dataStructure.CarData;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 import messageFilter.CarInfo;
+import smaUtils.SmaUtils;
 
 public class ReadCarData extends CyclicBehaviour {
-
-	private CarData getCarData(ACLMessage m) {
-		try {
-			CarData carData = (CarData) m.getContentObject();
-			return carData;
-		} catch (UnreadableException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 	
 	@Override
 	public void action() {
@@ -28,7 +18,7 @@ public class ReadCarData extends CyclicBehaviour {
 			block();
 		}
 		else {
-			CarData carData = getCarData(m);
+			CarData carData = SmaUtils.getCarDataFromMessage(m);
 			Map map = (Map) myAgent;
 			
 			// we update the carMap

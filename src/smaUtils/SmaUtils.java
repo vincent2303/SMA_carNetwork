@@ -3,6 +3,16 @@ package smaUtils;
 import java.util.Random;
 
 import dataStructure.CarData;
+import dataStructure.DestinationData;
+import dataStructure.PassengerData;
+import jade.core.AID;
+import jade.core.Agent;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 
 public class SmaUtils {
 	
@@ -44,5 +54,35 @@ public class SmaUtils {
 	public static int randomInt(int min, int max) {
 		Random r = new Random();
 		return r.nextInt((max - min) + 1) + min;
+	}
+	
+	public static CarData getCarDataFromMessage(ACLMessage m) {
+		try {
+			CarData carData = (CarData) m.getContentObject();
+			return carData;
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static PassengerData getPassengerDataFromMessage(ACLMessage m) {
+		try {
+			PassengerData passengerData = (PassengerData) m.getContentObject();
+			return passengerData;
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static DestinationData getDestinationDataDataFromMessage(ACLMessage m) {
+		try {
+			DestinationData destData = (DestinationData) m.getContentObject();
+			return destData;
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
