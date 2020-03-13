@@ -31,7 +31,6 @@ public class HandleProposition extends WakerBehaviour {
 		
 		while(msg != null) {
 			CarData carData = SmaUtils.getCarDataFromMessage(msg);
-			System.out.println("C'est bon j'ai recu ta propo " + carData.id);
 			dataPropositionList.add(carData);
 			AIDMap.put(msg.getSender(), carData);
 			msg = myAgent.receive();
@@ -53,6 +52,7 @@ public class HandleProposition extends WakerBehaviour {
 		
 		message.addReceiver(new AID("map", false));
 		((Passenger) myAgent).send(message);
+		((Passenger) myAgent).addBehaviour(new ReadNearestCar(dataPropositionList));
 	}
 
 }

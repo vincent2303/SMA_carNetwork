@@ -10,7 +10,7 @@ import jade.wrapper.StaleProxyException;
 
 public class House extends Agent {
 	
-	final int GENERATION_TICK = 1000;
+	final int GENERATION_TICK = 200;
 		
 	public String id;
 	

@@ -7,7 +7,7 @@ import jade.wrapper.StaleProxyException;
 
 public class GeneratePerson extends TickerBehaviour {
 	
-	final double PROBA_GEN = 0.1;
+	final double PROBA_GEN = 0.02;
 	
 	House house;
 

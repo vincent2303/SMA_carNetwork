@@ -19,7 +19,7 @@ import jade.lang.acl.ACLMessage;
 
 public class Request extends OneShotBehaviour {
 
-	static final int WAIT_BEFORE_ACCEPT = 2000;
+	static final int WAIT_BEFORE_ACCEPT = 500;
 
 	@Override
 	public void action() {

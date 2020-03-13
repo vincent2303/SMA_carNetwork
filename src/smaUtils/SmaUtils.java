@@ -4,7 +4,10 @@ import java.util.Random;
 
 import dataStructure.CarData;
 import dataStructure.DestinationData;
+import dataStructure.DrivingInfo;
 import dataStructure.PassengerData;
+import dataStructure.PathRequest;
+import dataStructure.RequestData;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
@@ -81,6 +84,61 @@ public class SmaUtils {
 			DestinationData destData = (DestinationData) m.getContentObject();
 			return destData;
 		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static RequestData getRequestDataFromMessage(ACLMessage m) {
+		try {
+			RequestData data = (RequestData) m.getContentObject();
+			return data;
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static PathRequest getPathRequestFromMessage(ACLMessage m) {
+		try {
+			PathRequest data = (PathRequest) m.getContentObject();
+			return data;
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static DrivingInfo getDrivingIfonFromMessage(ACLMessage m) {
+		try {
+			DrivingInfo data = (DrivingInfo) m.getContentObject();
+			return data;
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static PassengerData getpassengerDataFromMessage(ACLMessage m) {
+		try {
+			PassengerData data = (PassengerData) m.getContentObject();
+			return data;
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static AID getAIDFromId(String name, Agent myAgent) {
+		ServiceDescription serviceDescription = new ServiceDescription();
+	    serviceDescription.setName(name);
+		DFAgentDescription description = new DFAgentDescription();
+		description.addServices(serviceDescription);
+		DFAgentDescription[] descriptionList;
+		try {
+			descriptionList = DFService.search(myAgent, description);
+			return descriptionList[0].getName();
+		} catch (FIPAException e) {
 			e.printStackTrace();
 		}
 		return null;

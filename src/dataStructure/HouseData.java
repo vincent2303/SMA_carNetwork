@@ -1,8 +1,9 @@
 package dataStructure;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class HouseData {
+public class HouseData implements Serializable {
 	public String id;
 	public int[] position;
 	public ArrayList<String> neighboors;

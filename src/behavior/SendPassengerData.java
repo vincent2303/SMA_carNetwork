@@ -24,7 +24,6 @@ public class SendPassengerData extends TickerBehaviour {
 		try {
 			myMessage.setContentObject(data);
 		} catch (IOException e) { e.printStackTrace(); }
-		// myMessage.setContent("Hello from " + data.id );
 		myMessage.addReceiver(new AID("map", false));
 		((Passenger) myAgent).send(myMessage);
 	}

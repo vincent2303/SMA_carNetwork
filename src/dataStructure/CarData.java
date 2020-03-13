@@ -9,24 +9,24 @@ public class CarData implements Serializable {
 	static public final String DRIVING_TO_SEND = "DRIVING_TO_SEND";
 	
 	public String id;
-	public String from;
-	public String to;
+	public HouseData from;
+	public HouseData to;
 	public int distance;
-	public int distanceToDo;
-	public String carState;
+	public String insidePassengerId;
 	
-	public CarData(String id, String from) {
+	public CarData(String id, HouseData from) {
 		this.id = id;
 		this.from = from;
 		this.to = null;
-		this.carState = WAITING;
 		this.distance = 0;
+		this.insidePassengerId = null;
 	}
 	
-	public CarData(String id, String from, String to, int distance, int distanceToDo) {
+	public CarData(String id, HouseData from, HouseData to, int distance, int distanceToDo) {
 		this.id = id;
 		this.from = from;
 		this.to = from;
 		this.distance = distance;
+		this.insidePassengerId = null;
 	}
 }

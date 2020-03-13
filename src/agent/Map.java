@@ -11,12 +11,15 @@ import java.util.Map.Entry;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import behavior.ComputePath;
 import behavior.FindNearestCar;
 import behavior.ReadCarData;
 import behavior.ReadPassengerData;
 import dataStructure.CarData;
+import dataStructure.DrivingInfo;
 import dataStructure.HouseData;
 import dataStructure.HousePath;
+import dataStructure.PathRequest;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -149,40 +152,17 @@ public class Map extends Agent {
 		return drivingPath;
 	}
 	
-	
-	
-	/*
-	function findPath(from, to){
-	    // do dijsktra
-	    const visitedHouses = new Map([[ from.id, { distance: 0, parent: null, house: from } ]]) // key: houseID, value: { distance, parentId, house }
-	    const houseToVisit = from.neighboors.map( h=> ({ parent: from, house: h })) // list of { parentId, house }; initialized with the neighboors of from
-	    while(houseToVisit.length){
-	        const { parent, house } = houseToVisit.pop()
-	        const distance = visitedHouses.get(parent.id).distance + computeDistance(parent.position, house.position)
-	        if(!visitedHouses.has(house.id)){
-	            visitedHouses.set(house.id, { parent, house, distance })
-	            house.neighboors.forEach(h =>{ 
-	                houseToVisit.push({ parent: house, house: h })
-	            })
-	        } else if(distance<visitedHouses.get(house.id).distance){
-	            visitedHouses.set(house.id, { parent, house, distance })
-	            house.neighboors.forEach(h =>{ 
-	                houseToVisit.push({ parent: house, house: h })
-	            })
-	        }
-	    }
-	    // we go backward to get the final path
-	    let currentId = to.id
-	    const result = [currentId] // the final path (list of houses)
-	    while(currentId !== from.id){
-	        currentId = visitedHouses.get(currentId).parent.id
-	        result.push(currentId)
-	    }
-	    const x = result.pop() // we remove the from house (because we don't need it, we assign because we don't want to log)
-	    return result.map(id=>visitedHouses.get(id).house)
+	public DrivingInfo computePath(PathRequest pathRequest) {
+		String carFromHouseId = pathRequest.carData.from.id;
+		String passengerFromHouseId = pathRequest.request.fromId;
+		String passengerToHouseId = pathRequest.request.toId;
+		
+		ArrayList<HouseData> pathToGet = findPath(carFromHouseId, passengerFromHouseId);
+		ArrayList<HouseData> pathToSend = findPath(passengerFromHouseId, passengerToHouseId);
+		
+		DrivingInfo drivingInfo = new DrivingInfo(pathToGet, pathToSend);
+		return drivingInfo;
 	}
-	*/
-	
 		
 	// -------------------------------- SETUP ----------------------------------------------------------------
 	
@@ -202,6 +182,7 @@ public class Map extends Agent {
 		this.addBehaviour(new ReadPassengerData());
 		this.addBehaviour(new ReadCarData());
 		this.addBehaviour(new FindNearestCar());
+		this.addBehaviour(new ComputePath());
 		
 		this.findPath("h-0", "h-4");
 	}
@@ -219,7 +200,7 @@ public class Map extends Agent {
 		f.setVisible(true);
 		
 		(new Thread() {
-			private int DRAWING_TICK = 100;
+			private int DRAWING_TICK = 50;
 			public void run() {
 				while(true) {
 					try { 
@@ -267,15 +248,19 @@ public class Map extends Agent {
 		
 		private void drawCar(CarData c, Graphics g) {
 			g.setColor(CAR_COLOR);
-			int[] fromPosition = housesMap.get(c.from).position;
+			int[] fromPosition = housesMap.get(c.from.id).position;
 			int[] carPosition;
 			if(c.to == null) {
 				carPosition = fromPosition;
 			} else {
-				int[] toPosition = housesMap.get(c.to).position;
+				int[] toPosition = housesMap.get(c.to.id).position;
 				carPosition = SmaUtils.computePosition(fromPosition, toPosition, c.distance);
 			}
 			g.fillRect(carPosition[0] - CAR_SIZE/2, carPosition[1] - CAR_SIZE/2, CAR_SIZE, CAR_SIZE);
+			
+			if(c.insidePassengerId != null) {
+				drawPassenger(carPosition, g);
+			}
 		}
 		
 		private void drawPassenger(int[] postion, Graphics g) {

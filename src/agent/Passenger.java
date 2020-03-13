@@ -18,15 +18,19 @@ import jade.domain.FIPAException;
 
 public class Passenger extends Agent {
 	
-	final int SEND_DATA_TICK = 100;
-	final int SEND_REQUEST_TICK = 1000;
+	final int SEND_DATA_TICK = 50;
+	final int SEND_REQUEST_TICK = 500;
+	
+	static public final String WAITING = "WAITING";
+	static public final String INSIDE_CAR = "INSIDE_CAR";
+	static public final String ARRIVED = "ARRIVED";
 	
 	static String[] houseIds;
 	
 	public String id;
-	private String fromId;
-	private String toId;
-	private String passengerState = PassengerData.WAITING;
+	public String fromId;
+	public String toId;
+	public String passengerState = Passenger.WAITING;
 	
 	protected void setup(){
 		// init
@@ -42,7 +46,6 @@ public class Passenger extends Agent {
 		this.addBehaviour(new SendPassengerData(this, SEND_DATA_TICK));
 		
 		this.addBehaviour(new Request());
-		
 	}
 	
 	private void setRandomTo() {
